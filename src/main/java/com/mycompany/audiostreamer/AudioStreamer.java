@@ -38,7 +38,7 @@ public class AudioStreamer {
     public static void startBroadcasting(TargetDataLine line) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
         line.start();
         try ( InputStream is = new AudioInputStream(line)) {
-            byte[] buffer = new byte[line.getBufferSize()];
+            byte[] buffer = new byte[1024];
             while (is.read(buffer) > 0) {
                 //transform(buffer);
                 //System.out.println(Arrays.toString(buffer));
