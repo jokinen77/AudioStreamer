@@ -1,4 +1,4 @@
-# SoundStreamer
+# AudioStreamer
 
 Server that streams microphone to clients.
 
