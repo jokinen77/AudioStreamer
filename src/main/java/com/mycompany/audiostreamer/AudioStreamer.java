@@ -32,7 +32,6 @@ public class AudioStreamer {
         Spark.webSocket("/sound", SoundWebSocketHandler.class);
         Spark.init();
         
-        SoundWebSocketHandler.startBroadcastThread();
         startBroadcasting(line);
     }
 

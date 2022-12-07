@@ -64,6 +64,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
                     ws.onclose = () => {
                         setStatus("Socket closed!");
+                        ws = null;
+                        retryConnection();
                     };
                 }
 
@@ -74,6 +76,15 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
                 const updateVolume = (value) => {
                     player.volume(value);
+                }
+                
+                const retryConnection = () => {
+                    setTimeout(() => {
+                        if (!ws) {
+                            startAndStop();
+                        }
+                        retryConnection();
+                    }, 10*1000);
                 }
         </script>
     </body>
