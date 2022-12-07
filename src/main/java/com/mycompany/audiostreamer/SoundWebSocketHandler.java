@@ -12,8 +12,6 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -21,8 +19,6 @@ import org.slf4j.LoggerFactory;
  */
 @WebSocket
 public class SoundWebSocketHandler {
-
-    private static final Logger LOG = LoggerFactory.getLogger(SoundWebSocketHandler.class);
 
     private static Map<Long, Session> sessions = new ConcurrentHashMap<>();
 
@@ -39,7 +35,7 @@ public class SoundWebSocketHandler {
     public static void broadcastSoundData(byte[] data) throws IOException {
         for (Session session : sessions.values()) {
             if (session.isOpen()) {
-                session.getRemote().sendBytes(ByteBuffer.wrap(data));
+                session.getRemote().sendBytesByFuture(ByteBuffer.wrap(data));
             }
         }
     }
