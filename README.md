@@ -6,10 +6,10 @@ Server captures the microphone with [Java Sound API](https://docs.oracle.com/jav
 
 ## Deploy
 
-1. Clone repo ```git clone git@github.com:jokinen77/SoundStreamer.git```
-1. Change directory ```cd SoundStreamer```
+1. Clone repo ```git clone git@github.com:jokinen77/AudioStreamer.git```
+1. Change directory ```cd AudioStreamer```
 1. Build ```mvn clean install```
-1. Run ```java -jar target/AudioStreamer-1.0-SNAPSHOT.jar```
+1. Run ```java -jar target/AudioStreamer-1.0.jar```
 
 When app starts, it scans for suitable audio data lines and ask you to choose one. Example:
 ```
