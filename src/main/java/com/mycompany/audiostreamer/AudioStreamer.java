@@ -27,11 +27,11 @@ public class AudioStreamer {
     public static void main(String[] args) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         TargetDataLine line = getTargetDataLine();
         line.open();
-        
+
         Spark.staticFileLocation("/public");
         Spark.webSocket("/sound", SoundWebSocketHandler.class);
         Spark.init();
-        
+
         startBroadcasting(line);
     }
 
@@ -59,7 +59,7 @@ public class AudioStreamer {
             data[i] = (byte) Math.round(transformed[i]);
         }
     }
-    
+
     public static TargetDataLine getTargetDataLine() throws IOException, LineUnavailableException {
         List<TargetDataLine> dataLines = new ArrayList<>();
         List<Mixer> mixers = new ArrayList<>();
@@ -76,15 +76,25 @@ public class AudioStreamer {
             }
         }
         
+        if (dataLines.isEmpty()) {
+            System.out.println("Suitable audio device not found :(");
+            System.exit(0);
+        }
+
         System.out.println("Choose device to stream:");
         for (int i = 0; i < mixers.size(); i++) {
             Mixer mixer = mixers.get(i);
             System.out.println(i + ": " + mixer.getMixerInfo().getName());
         }
         
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Enter device > ");  
-        int index = sc.nextInt();
+        int index;
+        if (dataLines.size() == 1) {
+            index = 0;
+        } else {
+            Scanner sc = new Scanner(System.in);
+            System.out.print("Enter device >> ");
+            index = sc.nextInt();
+        }
 
         System.out.println("Device selected: " + mixers.get(index).getMixerInfo().getName());
 
