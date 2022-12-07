@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html>
+    <head>
+        <title>Sound stream</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            * {
+                padding: 4px 8px;
+            }
+        </style>
+    </head>
+    <body>
+        <div style="margin: auto calc(50% - 100px)">
+            <div id="status">Stream audio content!</div>
+            <div>
+                Volume:
+                <input type="range" min="0" max="8" value="2" step="0.2" onchange="updateVolume(this.value)" id="volumeSlider">
+            </div>
+            <div>
+                <button id="startAndStopButton" onclick="startAndStop()">Start</button>
+            </div>
+        </div>
+
+        <script src="https://unpkg.com/pcm-player"></script>
+        <script>
+                var ws;
+                var player = new PCMPlayer({
+                    inputCodec: 'Int16',
+                    channels: 2,
+                    sampleRate: 48000,
+                    flushTime: 100
+                });
+                player.volume(2);
+
+                const startAndStop = () => {
+                    if (ws) {
+                        ws.close();
+                        ws = null;
+                        document.getElementById("startAndStopButton").innerHTML = "Start";
+                        return;
+                    } else {
+                        document.getElementById("startAndStopButton").innerHTML = "Stop";
+                    }
+
+                    ws = new WebSocket("ws://" + location.hostname + ":" + location.port + "/sound");
+                    ws.binaryType = 'arraybuffer';
+
+                    ws.onopen = () => {
+                        setStatus("Socket open!");
+                    };
+
+                    ws.onmessage = (event) => {
+                        if (event.data instanceof ArrayBuffer) {
+                            player.feed(event.data);
+                        } else {
+                            console.log(event.data);
+                        }
+                    };
+
+                    ws.onclose = () => {
+                        setStatus("Socket closed!");
+                    };
+                }
+
+
+                const setStatus = (msg) => {
+                    document.getElementById("status").innerHTML = msg;
+                }
+
+                const updateVolume = (value) => {
+                    player.volume(value);
+                }
+        </script>
+    </body>
+</html>
