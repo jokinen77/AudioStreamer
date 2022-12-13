@@ -16,13 +16,13 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
     </head>
     <body>
         <div style="margin: auto calc(50% - 100px)">
-            <div id="status">Stream audio content!</div>
+            <div id="status">Listen audio stream!</div>
             <div>
                 Volume:
                 <input type="range" min="0" max="8" value="2" step="0.2" onchange="updateVolume(this.value)" id="volumeSlider">
             </div>
             <div>
-                <button id="startAndStopButton" onclick="startAndStop()">Start</button>
+                <button id="startButton" onclick="start()">Start</button>
             </div>
         </div>
 
@@ -37,21 +37,13 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 });
                 player.volume(2);
 
-                const startAndStop = () => {
-                    if (ws) {
-                        ws.close();
-                        ws = null;
-                        document.getElementById("startAndStopButton").innerHTML = "Start";
-                        return;
-                    } else {
-                        document.getElementById("startAndStopButton").innerHTML = "Stop";
-                    }
-
+                const start = () => {
                     ws = new WebSocket("ws://" + location.hostname + ":" + location.port + "/sound");
                     ws.binaryType = 'arraybuffer';
 
                     ws.onopen = () => {
                         setStatus("Socket open!");
+                        document.getElementById("startButton").disabled = true;
                     };
 
                     ws.onmessage = (event) => {
@@ -63,12 +55,13 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     };
 
                     ws.onclose = () => {
-                        setStatus("Socket closed!");
-                        ws = null;
-                        retryConnection();
+                        setStatus("No connection. Retrying in 10s...");
+                        setTimeout(() => {
+                            setStatus("Retrying...");
+                            start();
+                        }, 10*1000);
                     };
                 }
-
 
                 const setStatus = (msg) => {
                     document.getElementById("status").innerHTML = msg;
@@ -76,15 +69,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
                 const updateVolume = (value) => {
                     player.volume(value);
-                }
-                
-                const retryConnection = () => {
-                    setTimeout(() => {
-                        if (!ws) {
-                            startAndStop();
-                        }
-                        retryConnection();
-                    }, 10*1000);
                 }
         </script>
     </body>
