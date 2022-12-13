@@ -6,8 +6,8 @@ package com.mycompany.audiostreamer;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -20,20 +20,24 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 @WebSocket
 public class SoundWebSocketHandler {
 
-    private static Map<Long, Session> sessions = new ConcurrentHashMap<>();
+    private static final List<Session> sessions = new ArrayList<>();
 
     @OnWebSocketConnect
     public void onConnect(Session session) throws Exception {
-        sessions.put(System.currentTimeMillis(), session);
+        synchronized (sessions) {
+            sessions.add(session);
+        }
     }
 
     @OnWebSocketClose
     public void onClose(Session session, int statusCode, String reason) {
-
+        synchronized (sessions) {
+            sessions.removeIf((sess) -> !sess.isOpen());
+        }
     }
 
     public static void broadcastSoundData(byte[] data) throws IOException {
-        for (Session session : sessions.values()) {
+        for (Session session : sessions) {
             if (session.isOpen()) {
                 session.getRemote().sendBytesByFuture(ByteBuffer.wrap(data));
             }
