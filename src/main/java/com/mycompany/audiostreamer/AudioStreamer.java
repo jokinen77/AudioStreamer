@@ -48,18 +48,6 @@ public class AudioStreamer {
         line.stop();
     }
 
-    private static void transform(byte[] data) {
-        double[] transformed = new double[data.length];
-
-        for (int i = 0; i < data.length; i++) {
-            transformed[i] = data[i];
-        }
-
-        for (int i = 0; i < data.length; i++) {
-            data[i] = (byte) Math.round(transformed[i]);
-        }
-    }
-
     public static TargetDataLine getTargetDataLine() throws IOException, LineUnavailableException {
         List<TargetDataLine> dataLines = new ArrayList<>();
         List<Mixer> mixers = new ArrayList<>();
